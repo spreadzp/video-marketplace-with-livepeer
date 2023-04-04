@@ -110,8 +110,7 @@ export default function CreateItem() {
 
   useEffect(() => {
     const { name, description, price } = formInput
-    console.log('encryptedPBId', encryptedPBId)
-    console.log('playbackId :>>', playbackId)
+    console.log('encryptedPBId', encryptedPBId) 
     if (name && description && +price > 0 && encryptedPBId && encPrKByOwnerAddress) {
       setEnableMint(true)
 
@@ -222,12 +221,12 @@ export default function CreateItem() {
         />
         {/* <label htmlFor="file" className='text-xl font-bold text-white' >Choose content for the NFT </label> */}
 
-        {/* {!base64FileData &&
+       {!base64FileData &&
           <div>
             <label className="block mb-2 text-sm font-medium text-white dark:text-white" htmlFor="file_input">Upload poster image</label>
             <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help"
               id="file_input" name="file" onChange={onChange} type="file" />
-          </div>}*/}  
+          </div>} 
        {
           base64FileData && <div className="poster">
             <div className="block mb-2 text-sm font-medium text-white dark:text-white">Poster Image</div>
@@ -236,7 +235,7 @@ export default function CreateItem() {
 
         } 
         {  <div className='p-1 '>
-          <CreateAndViewAsset setPlaybackId={setPbId} />
+         {base64FileData &&  <CreateAndViewAsset setPlaybackId={setPbId} />}
         </div>}
 
  

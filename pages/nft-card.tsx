@@ -22,6 +22,7 @@ function NftCard({ nftItem, index, userAddress }: NftCardProps) {
   const [expanded, setExpanded] = useState(false)
   const handledDescription = nft?.description?.split(';') ?? ['']
   const [isLoadedContent, setIsLoadedContent] = useState(false)
+  const [isEncoded, setIsEncoded] = useState(false)
   const router = useRouter()
   useEffect(() => {
     if(nft.image){ 
@@ -115,11 +116,12 @@ function NftCard({ nftItem, index, userAddress }: NftCardProps) {
       if (dk && nft.playbackId) {
         console.log("🚀 ~ file: nft-card.tsx:28 ~ decryptData ~ dk", dk)
         // const encodedImageData = await axios.get(nft?.image ?? '')
-        console.log('nft.playbackId', nft.playbackId)
+        //console.log('nft.playbackId', nft.playbackId)
         const dm = await decryptUriFile(nft.playbackId, dk);
         nft.playbackId = dm
-        console.log('nft.playbackId :>>', nft.playbackId)
+        //console.log('nft.playbackId :>>', nft.playbackId)
         setNft(nft)
+        setIsEncoded(nft.playbackId?.includes('data') || false)
         // setDecodedFile(nft.image?.split(',')[0].split(";")[1])
         // console.log('decodedFile', decodedFile)
       }
@@ -144,12 +146,16 @@ function NftCard({ nftItem, index, userAddress }: NftCardProps) {
     }
   }
   return (<>
-    <div key={index} className="border shadow rounded-xl overflow-hidden">
-      {isLoadedContent ? <Loader /> : nft?.playbackId && !['0x'].includes(nft?.playbackId) && nft?.playbackId.length < 18 ?
-       <div className='m-4 pl-1'>{getTemplateByTypeFile(nft?.image ?? "", handledDescription[0], nft.playbackId, nft.name)}</div> :
-        <div className="pt-2 m-auto w-20 h-20">{getTemplateByTypeFile(base64Img, 'image')}</div>
+    <div key={index} className="border shadow rounded-xl overflow-hidden"> 
+    <div>@@@{isEncoded}</div>
+      { isEncoded ?
+        <div className='m-4 pl-1'>{getTemplateByTypeFile(nft?.image ?? "", handledDescription[0], nft.playbackId, nft.name)}</div> :
+       !isEncoded ? 
+        !isLoadedContent ? <div className="pt-2 m-auto w-20 h-20">{getTemplateByTypeFile(base64Img, 'image')}</div> :  <Loader /> :  <Loader />
       }
-      <div className="p-4">
+        
+    
+      <div className="p-4">:
       <p style={{ height: '20px' }} className="text-sm font-semibold text-gray-400">ID: {nft?.tokenId}</p>
         <p style={{ height: '20px' }} className="text-sm font-semibold text-gray-400">NAME: {nft?.name}</p>
       </div>
@@ -186,7 +192,7 @@ function NftCard({ nftItem, index, userAddress }: NftCardProps) {
           </Link>
         </div>
         {isLoadedContent ? <Loader /> :
-        nft?.image?.split(',')[0].split(";")[1] !== 'base64' && userAddress === nft?.seller &&
+        !isEncoded && userAddress === nft?.seller &&
           <button className="mt-4  w-full brand-btn text-white text-xl font-bold py-2   rounded" onClick={() => decryptData(nft)}>Decrypt the NFT content</button>}
       </div>
     </div>

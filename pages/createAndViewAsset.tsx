@@ -29,6 +29,7 @@ export default function CreateAndViewAsset({ setPlaybackId }: CreateAndViewAsset
     //     "createdAt": 1680612057890,
     //     "playbackId": "686cuii4jkmbicps"
     // }
+
     const {
         mutate: createAsset,
         data: assets,
@@ -55,14 +56,16 @@ export default function CreateAndViewAsset({ setPlaybackId }: CreateAndViewAsset
             : null,
     );  
   
-    useEffect(() => {
-        if (base64FileData) {
-            const arrayBuffer = Buffer?.from(base64FileData.split(',')[1]);
-            const blob = new Blob([arrayBuffer], { type: 'video/mp4' });
-            const file = new File([blob], 'encoded-video.mp4', { type: 'video/mp4' });
-            setEncodedVideo(file);
-        }
-    }, [base64FileData]);
+    /// here need implement encoding to save to Livepeer as encoded.txt
+    // useEffect(() => {
+    //     if (base64FileData) {
+    //         const arrayBuffer = Buffer?.from(base64FileData.split(',')[1]);
+    //         const blob = new Blob([arrayBuffer], { type: 'video/mp4' });
+    //         const file = new File([blob], 'encoded-video.mp4', { type: 'video/mp4' });
+    //         setEncodedVideo(file);
+    //     }
+    // }, [base64FileData]);
+
     const { data: metrics } = useAssetMetrics({
         assetId: assets?.[0].id,
         refetchInterval: 30000,
@@ -120,20 +123,25 @@ export default function CreateAndViewAsset({ setPlaybackId }: CreateAndViewAsset
         [progress],
     );
 
-    useEffect(() => {
-        console.log("🚀 ~ file: createAndViewAsset.tsx:120 ~ useEffect ~ asset:", assets)
-        if (assets && assets[0]?.playbackId) {
+    // the case for playbackId
+    // useEffect(() => {
+    //     console.log("🚀 ~ file: createAndViewAsset.tsx:120 ~ useEffect ~ asset:", assets)
+    //     if (assets && assets[0]?.playbackId) {
 
-            setPlaybackId(assets[0]?.playbackId)
-        }
-    }, [assets]);
+    //         setPlaybackId(assets[0]?.playbackId)
+    //     }
+    // }, [assets]);
+
+    useEffect(() => {
+        setPlaybackId(base64FileData)
+    }, [base64FileData]);
 
     return (
         <>  
             {metrics?.metrics?.[0] && (
                 <div>Views: {metrics?.metrics?.[0]?.startViews}</div>
             )}
-            {video && encodedVideo ? (
+            {video ? (
                 <div className="block mb-2 mt-2 text-sm font-medium text-white dark:text-white">Video file name: {video.name}</div>
             ) : (
                 <div {...getRootProps}>
@@ -144,7 +152,7 @@ export default function CreateAndViewAsset({ setPlaybackId }: CreateAndViewAsset
 
                 </div>
             )}
-            {assets?.map((asset) => (
+            {/* {assets?.map((asset) => (
                 <div key={asset.id}>
                     <div>
                         <div>Asset Name: {asset?.name}</div>
@@ -152,17 +160,8 @@ export default function CreateAndViewAsset({ setPlaybackId }: CreateAndViewAsset
                         <div>IPFS CID: {asset?.storage?.ipfs?.cid ?? 'None'}</div>
                     </div>
                 </div>
-            ))}
-            <button
-                disabled={status === 'loading' || !createAsset}
-                onClick={() => {
-                    createAsset?.();
-                }}
-            >
-                Create Asset
-            </button>
-
-            {error && <div>{error.message}</div>}
+            ))} */} 
+ 
             {error && <p>{error.message}</p>}
             <div className="m-10">
                 {progressFormatted &&
@@ -174,7 +173,7 @@ export default function CreateAndViewAsset({ setPlaybackId }: CreateAndViewAsset
                     <ProgressBar progressPercentage={Math.round(progress?.[0]?.progress * 100)} processName={progress?.[0].phase} />}
             </div>
 
-            {base64FileData && assets && (
+            {base64FileData && (
                 <div className='h-25 w-25'>
                     <Player title={video?.name}
                         src={base64FileData}
@@ -204,6 +203,8 @@ export default function CreateAndViewAsset({ setPlaybackId }: CreateAndViewAsset
 
                 </div>
             )}
+            {/*
+            
             {video && status !== 'success' && <div className="">
                 <button
                     onClick={() => {
@@ -214,7 +215,7 @@ export default function CreateAndViewAsset({ setPlaybackId }: CreateAndViewAsset
                 >
                     {!isLoading ? 'Upload the file via LivePeer' : 'Uploading...'}
                 </button>
-            </div>}
+            </div>} */}
         </>
     );
 };
