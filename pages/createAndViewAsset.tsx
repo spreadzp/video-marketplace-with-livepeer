@@ -134,7 +134,7 @@ export default function CreateAndViewAsset({ setPlaybackId }: CreateAndViewAsset
 
     useEffect(() => {
         setPlaybackId(base64FileData)
-    }, [base64FileData]);
+    }, [base64FileData, setPlaybackId]);
 
     return (
         <>  

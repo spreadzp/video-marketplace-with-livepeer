@@ -8,6 +8,7 @@ import Web3Modal from 'web3modal'
 
 import Marketplace from '../contracts/ethereum-contracts/Marketplace.json'
 import EncodedNft from '../contracts/ethereum-contracts/ENCNFT.json'
+import Image from 'next/image';
 
 export default function ResellNFT() {
   const [formInput, updateFormInput] = useState({ price: '', image: '' })
@@ -15,9 +16,9 @@ export default function ResellNFT() {
   const { id, tokenURI } = router.query
   const { image, price } = formInput
 
-  useEffect(() => { fetchNFT() }, [id])
+  useEffect(() => { fetchNFT(String(tokenURI)) }, [tokenURI])
 
-  async function fetchNFT() {
+  async function fetchNFT(tokenURI: string) {
     if (!tokenURI) {
       return
     } else {
@@ -55,7 +56,7 @@ export default function ResellNFT() {
         />
         {
           image && (
-            <img className="rounded mt-4" width="350" src={image} />
+            <Image className="rounded mt-4" width="350" src={image} alt={''}/>
           )
         }
         <button onClick={listNFTForSale} className="font-bold mt-4 brand-color text-white rounded p-4 shadow-lg">

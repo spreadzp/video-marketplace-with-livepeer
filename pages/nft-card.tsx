@@ -18,7 +18,7 @@ type NftCardProps = {
 function NftCard({ nftItem, index, userAddress }: NftCardProps) {
   const [decodedFile, setDecodedFile] = useState(nftItem?.image?.split(',')[0].split(";")[1])
   const [nft, setNft] = useState(nftItem)
-  const [base64Img, setbase64Img] = useState('')
+  const [base64Img, setBase64Img] = useState('')
   const [expanded, setExpanded] = useState(false)
   const handledDescription = nft?.description?.split(';') ?? ['']
   const [isLoadedContent, setIsLoadedContent] = useState(false)
@@ -29,15 +29,13 @@ function NftCard({ nftItem, index, userAddress }: NftCardProps) {
  
         const getImg = async (url: string) => {
 
-          const response = await fetch(url)
-       
-            console.log("🚀 ~ file: nft-card.tsx:30 ~ .then ~ response", response)
+          const response = await fetch(url) 
             if (!response.ok || !response) {
               throw new Error('Response was not ok.');
               }
        
               const reader = response?.body?.getReader()
-              const contentLength = +(response?.headers['get']('Content-Length') ?? '0');
+              // const contentLength = +(response?.headers['get']('Content-Length') ?? '0');
               let chunks = [];
               let receivedLength = 0;
               while (true) {
@@ -62,68 +60,24 @@ function NftCard({ nftItem, index, userAddress }: NftCardProps) {
            
             let result = new TextDecoder("utf-8").decode(chunksAll); 
          
-            setbase64Img(result)
+            setBase64Img(result)
         } 
         getImg(nft.image)  
       } 
     
   }, [nft]);
-
-//   const getInfoFromIPFS = async (ipfsImageUrl: string) => {
-//     const responseProxy = await fetch(ipfsImageUrl)
-//     let response = await fetch(responseProxy.url);
-
-//     const reader = response?.body?.getReader();
-
-//     // Шаг 2: получаем длину содержимого ответа
-//     const contentLength = +response?.headers?.get('Content-Length');
-//   let chunks = []; // массив полученных двоичных фрагментов (составляющих тело ответа)
-//     while (true) {
-//         const { done, value } = await reader?.read();
-
-//         if (done) {
-//             break;
-//         }
-
-//         chunks.push(value);
-//         receivedLength += value.length;
-
-//         console.log(`Получено ${receivedLength} из ${contentLength}`)
-//     }
-
-//     // Шаг 4: соединим фрагменты в общий типизированный массив Uint8Array
-//     let chunksAll = new Uint8Array(receivedLength); // (4.1)
-//     let position = 0;
-//     for (let chunk of chunks) {
-//         chunksAll.set(chunk, position); // (4.2)
-//         position += chunk.length;
-//     }
-
-//     // Шаг 5: декодируем Uint8Array обратно в строку
-//     let result = new TextDecoder("utf-8").decode(chunksAll);
-//     // Шаг 3: считываем данные:
-//     let receivedLength = 0; // количество байт, полученных на данный момент
-  
-//     console.log("🚀 ~ file: OwnerAssets.js ~ line 99 ~ getInfoFromIPFS ~ result", result)
-//     setEncData(result)
-// }
+ 
   const decryptData = async (nft: NFTProps) => {
     try{
       setIsLoadedContent(true)
       console.log('nft.encodedInfo', nft.encodedInfo)
       const dk = await decryptPrivateKey(nft.encodedInfo, userAddress);
   
-      if (dk && nft.playbackId) {
-        console.log("🚀 ~ file: nft-card.tsx:28 ~ decryptData ~ dk", dk)
-        // const encodedImageData = await axios.get(nft?.image ?? '')
-        //console.log('nft.playbackId', nft.playbackId)
+      if (dk && nft.playbackId) { 
         const dm = await decryptUriFile(nft.playbackId, dk);
-        nft.playbackId = dm
-        //console.log('nft.playbackId :>>', nft.playbackId)
-        setNft(nft)
-        setIsEncoded(nft.playbackId?.includes('data') || false)
-        // setDecodedFile(nft.image?.split(',')[0].split(";")[1])
-        // console.log('decodedFile', decodedFile)
+        nft.playbackId = dm;
+        setNft(nft);
+        setIsEncoded(nft.playbackId?.includes('data') || false);
       }
     }catch (err: any) {
       console.log('err', err)
@@ -135,19 +89,18 @@ function NftCard({ nftItem, index, userAddress }: NftCardProps) {
     router.push(`/dm/${address}`)
   }
 
-  const getTypeContentIcon = (type: string) => {
-    switch (type) {
-      case 'image': return (<GifIcon className="h-60 w-60 brand-color" title='Encrypted image content'> </GifIcon>)
-      case 'video': return (<VideoCameraIcon className="h-60 w-60 brand-color" title='Encrypted video content'> </VideoCameraIcon>)
-      case 'audio': return (<MusicalNoteIcon className="h-60 w-60 brand-color" title='Encrypted audio content'> </MusicalNoteIcon>)
-      case 'application': return (<DocumentChartBarIcon className="h-60 w-60 brand-color" title='Encrypted application content'> </DocumentChartBarIcon>)
-      case 'text': return (<DocumentTextIcon className="h-60 w-60 brand-color" title='Encrypted text content'> </DocumentTextIcon>)
-      default: return (<DocumentTextIcon className="h-60 w-60 brand-color" title='Encrypted any content'> </DocumentTextIcon>)
-    }
-  }
+  // const getTypeContentIcon = (type: string) => {
+  //   switch (type) {
+  //     case 'image': return (<GifIcon className="h-60 w-60 brand-color" title='Encrypted image content'> </GifIcon>)
+  //     case 'video': return (<VideoCameraIcon className="h-60 w-60 brand-color" title='Encrypted video content'> </VideoCameraIcon>)
+  //     case 'audio': return (<MusicalNoteIcon className="h-60 w-60 brand-color" title='Encrypted audio content'> </MusicalNoteIcon>)
+  //     case 'application': return (<DocumentChartBarIcon className="h-60 w-60 brand-color" title='Encrypted application content'> </DocumentChartBarIcon>)
+  //     case 'text': return (<DocumentTextIcon className="h-60 w-60 brand-color" title='Encrypted text content'> </DocumentTextIcon>)
+  //     default: return (<DocumentTextIcon className="h-60 w-60 brand-color" title='Encrypted any content'> </DocumentTextIcon>)
+  //   }
+  // }
   return (<>
     <div key={index} className="border shadow rounded-xl overflow-hidden"> 
-    <div>@@@{isEncoded}</div>
       { isEncoded ?
         <div className='m-4 pl-1'>{getTemplateByTypeFile(nft?.image ?? "", handledDescription[0], nft.playbackId, nft.name)}</div> :
        !isEncoded ? 
@@ -182,7 +135,7 @@ function NftCard({ nftItem, index, userAddress }: NftCardProps) {
         </div>}
       </div>
       <div className="p-4 bg-slate-400">
-        <p className="text-xl font-bold text-white">Seller's price:  {nft?.price} ETH</p>
+        <p className="text-xl font-bold text-white">Seller price:  {nft?.price} ETH</p>
         <p className="text-xl font-bold text-white">Max bet: {nft?.maxPrice} ETH</p>
         <p className="text-xl font-bold text-white">Buyers: {nft?.buyers?.length} </p>
         <p className="text-xl font-bold text-white">Tonal sum of bets: {nft?.totalSum} ETH</p>

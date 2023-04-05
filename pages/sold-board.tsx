@@ -21,11 +21,7 @@ function SoldBoard() {
         id: string,
         soldSum: string,
         currentOwner: string
-    }
-    // const soldNfts: SoldNft[] = [
-    //     { id: 1"", soldSum: '1234', currentOwner: 'abcd' },
-    //     { id: 2, soldSum: '1234', currentOwner: 'abcd' }
-    // ]
+    } 
 
     useEffect(() => {
         getWeb3Instance()
@@ -41,27 +37,29 @@ function SoldBoard() {
     useEffect(() => {
         if (encodedNftContract.toString() !== '{}' && account) {
             encodedNftContract.methods?.getIdsByAddress(account).call()
-                .then((ids: string[]) => {
-                    //console.log("🚀 ~ file: sold-board.tsx:39 ~ .then ~ ids", ids)
+                .then((ids: string[]) => { 
                     setIdsHistory(() => [...idsHistory, ...ids])
                 })
         }
 
-    }, [encodedNftContract, account ]);
+    }, [encodedNftContract, account, idsHistory ]);
 
     useEffect(() => {
         (async () => {
 
             const nfts = await Promise.all(idsHistory?.map(async (id: string) => {
-                const balance = await marketPlaceContract.methods.getOwnerInfo(id, account).call()
+                // eslint-disable-next-line no-use-before-define
+                const balance = await marketPlaceContract.methods.getOwnerInfo(id, account).call();
+                // eslint-disable-next-line no-use-before-define
                 const currentOwnerInfo = await encodedNftContract.methods.getTokenInfoLastOwner(id).call()
                 const nftInfo: SoldNft = { id: id, currentOwner: currentOwnerInfo.owner, soldSum: Web3.utils.fromWei(balance) }
                 return nftInfo
             }))
             setSoldNfts(() => [...soldNfts, ...nfts])
         })()
+    // eslint-disable-next-line no-use-before-define
+    }, [idsHistory, account, soldNfts, setSoldNfts, encodedNftContract.methods, marketPlaceContract.methods]);
 
-    }, [idsHistory, account]);
     const makeAction = async (nft: SoldNft) => {
         try {
             setIsWithdraw(true)
@@ -69,8 +67,7 @@ function SoldBoard() {
                 .send({ from: account }).on('receipt', function () { 
                     alert('withdraw successfully') 
                 })
-        } catch (err) {
-            console.log("🚀 ~ file: sold-board.tsx:73 ~ makeAction ~ err", err)
+        } catch (err) { 
             setIsWithdraw(false)
         } finally {
             setIsWithdraw(false) 

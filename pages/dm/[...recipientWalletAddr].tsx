@@ -34,7 +34,7 @@ const ConversationPage: NextPage = () => {
       }
     }
     checkIfEns()
-  }, [recipientWalletAddr,isBrowser ])
+  }, [recipientWalletAddr, isBrowser, resolveName, router ])
 
   return <Conversation recipientWalletAddr={recipientWalletAddr ?? ''} />
 }
